@@ -35,7 +35,7 @@ def train_and_evaluate(config_path):
     Test_x=test.drop(target,axis=1)
     Train_y=train[target]
     Test_y=test[target]
-    print(Train_y.head(),Test_y.head())
+    # print(Train_y.head(),Test_y.head())
     ######################################
 
     rf=RandomForestRegressor(n_estimators=n_estimators,max_depth=max_depth,random_state=random_state)
