@@ -1,24 +1,24 @@
 base:
-  project: mlops-insurance
+  project: mlops-flight_c5
   random_state: 42
-  target_col: charges
+  target_col: Price
 
 data_source:
-  s3_source: source_code/insurance_course5i.csv
+  s3_source: source_code/flight_c5.csv
 
 load_data:
-  raw_dataset_csv: data/raw/insurance_course5i.csv
+  raw_dataset_csv: data/raw/flight_c5.csv
 
 split_data:
-  train_path: data/processed/train_insurance_course5i.csv
-  test_path: data/processed/test_insurance_course5i.csv
+  train_path: data/processed/train_flight_c5.csv
+  test_path: data/processed/test_flight_c5.csv
   test_size: 0.2
 
 estimators:
-  ElasticNet:
+  RandomForestRegressor:
     params:
-      alpha: 0.9
-      l1_ratio: 0.4
+      n_estimators: 120
+      max_depth: 15
 
 model_dir: models
 

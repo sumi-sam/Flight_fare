@@ -6,7 +6,7 @@ from pkgutil import get_data
 from get_data import get_data,read_params
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error,mean_absolute_error,r2_score
-from sklearn.linear_model import ElasticNet
+from sklearn.ensemble import RandomForestRegressor
 import joblib
 import json
 import numpy as np
@@ -25,8 +25,8 @@ def train_and_evaluate(config_path):
     train_data_path=config["split_data"]["train_path"]
     random_state=config["base"]["random_state"]
     model_dir=config["model_dir"]
-    alpha=config["estimators"]["ElasticNet"]["params"]["alpha"]
-    l1_ratio=config["estimators"]["ElasticNet"]["params"]["l1_ratio"]
+    n_estimators=config["estimators"]["RandomForestRegressor"]["params"]["n_estimators"]
+    max_depth=config["estimators"]["RandomForestRegressor"]["params"]["max_depth"]
     target=[config["base"]["target_col"]]
     train =pd.read_csv(train_data_path,sep=",",encoding="utf-8")
     test =pd.read_csv(test_data_path,sep=",",encoding="utf-8")
@@ -35,12 +35,13 @@ def train_and_evaluate(config_path):
     Test_x=test.drop(target,axis=1)
     Train_y=train[target]
     Test_y=test[target]
+    print(Train_y.head(),Test_y.head())
     ######################################
 
-    lr=ElasticNet(alpha=alpha,l1_ratio=l1_ratio,random_state=random_state)
-    lr.fit(Train_x,Train_y)
+    rf=RandomForestRegressor(n_estimators=n_estimators,max_depth=max_depth,random_state=random_state)
+    rf.fit(Train_x,Train_y)
 
-    predicted_qualities=lr.predict(Test_x)
+    predicted_qualities=rf.predict(Test_x)
 
     (rmse,mae,r2)=eval_metrics(Test_y,predicted_qualities)
     print('RMSE=',rmse)
@@ -59,15 +60,15 @@ def train_and_evaluate(config_path):
 
     with open(params_file,"w") as f:
         params={
-            "alpha":alpha,
-            "l1_ratio":l1_ratio
+            "n_estimators":n_estimators,
+            "max_depth":max_depth
         }
         json.dump(params,f,indent=4)
     
     os.makedirs(model_dir,exist_ok=True)
 
     model_path=os.path.join(model_dir,"model.joblib")
-    joblib.dump(lr,model_path)
+    joblib.dump(rf,model_path)
     return train_and_evaluate
 
 if __name__=="__main__":
